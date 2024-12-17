@@ -1,0 +1,2 @@
+# TTSAudioNormalizer
+TTSAudioNormalizer是一个专门用于TTS数据制作的工具，包括音频数据响度相关的描述性统计分析，响度归一化等操作。
