@@ -50,33 +50,62 @@ TTSAudioNormalizer is a professional TTS audio preprocessing tool that provides 
 
 ### Recommended Standardization Process:
 
-```python
-class TTSAudioNormalizer:
-    def process_pipeline(self, audio_file):
-        """
-        Audio standardization pipeline before TTS training
-        """
-        # 1. Basic Preprocessing
-        self.convert_format()      # Unify format
-        self.resample()           # Unify sample rate
-        self.convert_channels()   # Convert to mono channel
-        
-        # 2. Audio Quality Optimization
-        self.remove_dc_offset()   # Remove DC offset
-        self.normalize_volume()   # Volume normalization
-        self.optimize_frequency() # Frequency response optimization
-        
-        # 3. Noise Processing
-        self.remove_silence()     # Remove silence segments
-        self.reduce_noise()       # Noise reduction
-        self.compress_dynamic()   # Dynamic range compression
-        
-        # 4. Quality Check
-        self.check_quality()      # Quality validation
-        self.validate_features()  # Feature validation
-```
 
-This pipeline outlines a comprehensive audio preprocessing workflow specifically designed for TTS (Text-to-Speech) training, including format standardization, quality enhancement, noise handling, and quality assurance steps.
+
+## 1. Basic Preprocessing 🎯
+- **Format Unification**
+  - Convert different audio formats (e.g., to WAV)
+  - Ensure format compatibility
+- **Sample Rate Unification**
+  - Standardize sampling rate (e.g., 22050Hz)
+  - Maintain data consistency
+- **Mono Channel Conversion**
+  - Convert multi-channel audio to mono
+  - Simplify subsequent processing
+
+## 2. Audio Quality Optimization 🔊
+- **DC Offset Removal**
+  - Eliminate fixed offset in audio signals
+  - Improve audio quality
+- **Volume Normalization**
+  - Unify audio volume levels
+  - Ensure loudness consistency
+- **Frequency Response Optimization**
+  - Adjust frequency characteristics
+  - Optimize audio performance
+
+## 3. Noise Processing 🎵
+- **Silence Removal**
+  - Clean up invalid audio segments
+  - Enhance data quality
+- **Noise Reduction**
+  - Eliminate background noise
+  - Improve audio clarity
+- **Dynamic Range Compression**
+  - Balance audio dynamic range
+  - Enhance overall performance
+
+## 4. Quality Check ✅
+- **Quality Validation**
+  - Check processed audio quality
+  - Ensure training requirements are met
+- **Feature Validation**
+  - Verify audio feature parameters
+  - Guarantee effective feature extraction
+
+---
+
+**Processing Flow Diagram:**
+
+`Input Audio` ➡️ `Basic Preprocessing` ➡️ `Quality Optimization` ➡️ `Noise Processing` ➡️ `Quality Check` ➡️ `Output Audio`
+
+---
+
+**Important Notes:**
+- Maintain processing logs for each step
+- Perform quality checks at key points
+- Keep original audio backups
+- Adjust parameters based on specific application scenarios
 
 ## Main Functions
 
