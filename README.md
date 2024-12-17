@@ -385,6 +385,6 @@ Through proper configuration and use of this tool, you can significantly improve
 
 #### Contact Information
 
-
+[Wechat](WechatIMG1898.jpg)
 
 
