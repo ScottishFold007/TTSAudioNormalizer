@@ -62,7 +62,7 @@ from audio_analyzer import AudioAnalyzer
 
 analyzer = AudioAnalyzer()
 results = analyzer.analyze_speaker_directory(
-    base_dir="raw_voices",
+    base_dir="raw_voices",  # 嵌套文件夹，即一个大文件夹下有若干子文件夹（其中有若干音频文件）
     output_dir="analysis_report",
     max_workers=16
 )
@@ -219,7 +219,7 @@ params = AudioProcessingParams(
 )
 
 results = process_all_speakers(
-    base_input_dir="raw_audio",
+    base_input_dir="raw_audio", # 嵌套文件夹，即一个大文件夹下有若干子文件夹（其中有若干音频文件）
     base_output_dir="normalized_audio",
     params=params
 )
