@@ -184,8 +184,11 @@ class TTSAudioNormalizer(AudioNormalizer):
                     release_time=params.noise_release_time
                 )
 
-            # 静音处理
-            # 去除开头的静音
+        
+            # Silence processing
+            # Remove silence at the beginning
+            
+
             transformer.silence(
                 location=1,
                 silence_threshold=params.silence_threshold,
@@ -193,7 +196,7 @@ class TTSAudioNormalizer(AudioNormalizer):
                 buffer_around_silence=True
             )
 
-            # 去除结尾的静音
+            # Remove silence at the end
             transformer.silence(
                 location=-1,
                 silence_threshold=params.silence_threshold,
@@ -201,7 +204,7 @@ class TTSAudioNormalizer(AudioNormalizer):
                 buffer_around_silence=True
             )
         
-            # 去除中间的静音段
+            # Remove silence segments in the middle
             transformer.silence(
                 location=0,
                 silence_threshold=params.silence_threshold,
@@ -209,7 +212,7 @@ class TTSAudioNormalizer(AudioNormalizer):
                 buffer_around_silence=True
             )
 
-            # 3. 频率响应优化
+            # 3. Frequency response optimization
             if params.subsonic_filter_enabled:
                 transformer.highpass(params.subsonic_frequency, 2.0)
 
@@ -234,9 +237,9 @@ class TTSAudioNormalizer(AudioNormalizer):
                         slope=params.treble_slope
                     )
 
-            # 4. 动态范围处理
+            # 4. Dynamic range processing.
             if params.compand_enabled:
-                # 先进行动态范围压缩
+                # Perform dynamic range compression first
                 transformer.compand(
                     attack_time=params.attack_time,
                     decay_time=params.decay_time,
@@ -245,23 +248,23 @@ class TTSAudioNormalizer(AudioNormalizer):
                     compression_ratio=params.compression_ratio
                 )
 
-            # 最后进行音量标准化
+            # Normalize the volume at the end
             transformer.norm(params.target_db)
 
-            # 5. 边缘处理
+            # 5. Edge processing
             if params.fade_enabled:
                 transformer.fade(
                     fade_in_len=params.fade_in_time,
                     fade_out_len=params.fade_out_time
                 )
 
-            # 6. 执行转换
+            # 6. Perform the transformation
             transformer.build(input_path, output_path)
 
-            # 7. 质量检查
+            # 7. Quality inspection
             self._check_audio_quality(output_path)
         
-            logging.info(f"成功处理文件: {input_path}")
+            logging.info(f"Successfully processed files: {input_path}")
             return True
 
         except Exception as e:
@@ -273,13 +276,13 @@ class TTSAudioNormalizer(AudioNormalizer):
             
     def _check_audio_quality(self, audio_path: str) -> None:
         """
-        检查处理后的音频质量
+       Inspect the quality of the processed audio
         """
         try:
-            # 加载音频
+            # Loading audio
             y, sr = librosa.load(audio_path, sr=None)
             
-            # 计算质量指标
+            # Calculate quality metrics
             metrics = {
                 'duration': librosa.get_duration(y=y, sr=sr),
                 'rms_energy': float(np.sqrt(np.mean(y**2))),
@@ -288,23 +291,24 @@ class TTSAudioNormalizer(AudioNormalizer):
                 'silence_ratio': float(np.mean(np.abs(y) < 0.01))
             }
             
-            # 存储质量指标
+            # Store quality metrics
             self.quality_metrics[audio_path] = metrics
             
-            # 检查是否符合要求
-            if metrics['duration'] < 0.1:  # 太短的音频
-                raise ValueError("音频太短")
-            if metrics['rms_energy'] < 0.01:  # 音量太小
-                raise ValueError("音量太小")
-            if metrics['silence_ratio'] > 0.5:  # 静音太多
-                raise ValueError("静音比例过高")
+            # Check if it meets the requirements
+            if metrics['duration'] < 0.1:  # Too short audio
+                raise ValueError("The audio is too short")
+            if metrics['rms_energy'] < 0.01:  # Too quiet
+                raise ValueError("The volume is too low")
+            if metrics['silence_ratio'] > 0.5:  # Too much silence
+                raise ValueError("The silence ratio is too high")
+
                 
         except Exception as e:
-            logging.warning(f"质量检查失败 {audio_path}: {str(e)}")
+            logging.warning(f"Quality check failed {audio_path}: {str(e)}")
             
     def get_quality_report(self) -> Dict[str, Dict[str, float]]:
         """
-        获取音频质量报告
+        Get audio quality report
         """
         return self.quality_metrics
         
@@ -314,50 +318,50 @@ class TTSAudioNormalizer(AudioNormalizer):
                                 params: Optional[AudioProcessingParams] = None,
                                 max_workers: int = 4) -> None:
         """
-        批量处理目录中的音频文件
+        Batch process audio files in directory
         """
         if params is None:
             params = AudioProcessingParams()
-
+    
         if params.output_format.lower() not in [fmt.strip('.') for fmt in self.supported_formats]:
-            raise ValueError(f"不支持的输出格式: {params.output_format}")
-
+            raise ValueError(f"Unsupported output format: {params.output_format}")
+    
         if not os.path.exists(input_dir):
-            raise FileNotFoundError(f"输入目录不存在: {input_dir}")
-
+            raise FileNotFoundError(f"Input directory does not exist: {input_dir}")
+    
         audio_files = self._get_audio_files(input_dir, output_dir, params)
         total_files = len(audio_files)
-
-        # 使用一个进度条对象
-        pbar = tqdm(total=total_files, desc="处理进度", ncols=100, position=1, leave=False)
-
+    
+        # Use a progress bar object
+        pbar = tqdm(total=total_files, desc="Processing Progress", ncols=100, position=1, leave=False)
+    
         def process_file(input_path, output_path):
             result = self.normalize_audio(input_path, output_path, params)
             pbar.update(1)
             return result
-
+    
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = []
             for input_path, output_path in audio_files:
                 future = executor.submit(process_file, input_path, output_path)
                 futures.append(future)
-
-            # 等待所有任务完成
+    
+            # Wait for all tasks to complete
             for future in futures:
                 future.result()
-
+    
         pbar.close()
         self._print_summary(total_files)
         self._print_quality_summary()
         
     def _print_quality_summary(self) -> None:
         """
-        打印音频质量统计报告
+        Print audio quality statistics report
         """
         if not self.quality_metrics:
             return
             
-        print("\n音频质量统计:")
+        print("\nAudio Quality Statistics:")
         metrics_summary = {
             'duration': [],
             'rms_energy': [],
@@ -371,9 +375,9 @@ class TTSAudioNormalizer(AudioNormalizer):
             
         for metric_name, values in metrics_summary.items():
             values = np.array(values)
-            print(f"\n{metric_name}统计:")
-            print(f"  平均值: {np.mean(values):.3f}")
-            print(f"  标准差: {np.std(values):.3f}")
-            print(f"  最小值: {np.min(values):.3f}")
-            print(f"  最大值: {np.max(values):.3f}")
-
+            print(f"\n{metric_name} statistics:")
+            print(f"  Mean: {np.mean(values):.3f}")
+            print(f"  Std Dev: {np.std(values):.3f}")
+            print(f"  Min: {np.min(values):.3f}")
+            print(f"  Max: {np.max(values):.3f}")
+    
