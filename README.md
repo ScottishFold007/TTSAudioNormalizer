@@ -232,3 +232,20 @@ class TTSAudioNormalizer:
 3）如果想避免音量过大：
 - 设置 target_db = min(平均音量均值, -3.0)
 
+## 如何使用
+### 音频描述性分析
+# 创建分析器实例
+```python
+analyzer = AudioAnalyzer()
+
+# 指定输入和输出目录
+base_input_dir = "raw_voices"
+analysis_output_dir = "raw_voices/音频分析报告"
+
+# 执行分析
+results_df = analyzer.analyze_speaker_directory(
+    base_dir=base_input_dir,
+    output_dir=analysis_output_dir,
+    max_workers=16
+)
+```
