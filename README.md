@@ -47,6 +47,37 @@ TTSAudioNormalizer is a professional TTS audio preprocessing tool that provides 
 
 
 
+
+### Recommended Standardization Process:
+
+```python
+class TTSAudioNormalizer:
+    def process_pipeline(self, audio_file):
+        """
+        Audio standardization pipeline before TTS training
+        """
+        # 1. Basic Preprocessing
+        self.convert_format()      # Unify format
+        self.resample()           # Unify sample rate
+        self.convert_channels()   # Convert to mono channel
+        
+        # 2. Audio Quality Optimization
+        self.remove_dc_offset()   # Remove DC offset
+        self.normalize_volume()   # Volume normalization
+        self.optimize_frequency() # Frequency response optimization
+        
+        # 3. Noise Processing
+        self.remove_silence()     # Remove silence segments
+        self.reduce_noise()       # Noise reduction
+        self.compress_dynamic()   # Dynamic range compression
+        
+        # 4. Quality Check
+        self.check_quality()      # Quality validation
+        self.validate_features()  # Feature validation
+```
+
+This pipeline outlines a comprehensive audio preprocessing workflow specifically designed for TTS (Text-to-Speech) training, including format standardization, quality enhancement, noise handling, and quality assurance steps.
+
 ## Main Functions
 
 ### 1. Audio Analysis
