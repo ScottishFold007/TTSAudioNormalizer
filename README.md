@@ -204,6 +204,16 @@ Max Amplitude:
 
 
 ### 2. 音频标准化
+这个解决方案的主要特点：
+- 使用 sox 的 norm 效果对音频进行标准化处理
+- 可以处理单个文件或批量处理整个目录
+- 默认将音量标准化到 -3dB，可以根据需要调整
+- 保持原始音频质量，只调整音量
+
+使用方法很简单，你可以：
+- 处理单个文件：直接调用 normalize_audio() 函数
+- 处理整个目录：使用 batch_normalize_directory() 函数
+这样处理后的音频文件应该会有比较均匀的音量水平，解决声音忽大忽小的问题。如果觉得整体音量还是太小或太大，可以调整 target_db 参数的值。
 ```python
 from tts_audio_normalizer import AudioProcessingParams, process_all_speakers
 
