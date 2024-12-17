@@ -187,8 +187,6 @@ class TTSAudioNormalizer(AudioNormalizer):
         
             # Silence processing
             # Remove silence at the beginning
-            
-
             transformer.silence(
                 location=1,
                 silence_threshold=params.silence_threshold,
@@ -271,9 +269,6 @@ class TTSAudioNormalizer(AudioNormalizer):
             self._handle_error(input_path, e)
             return False
 
-
-
-            
     def _check_audio_quality(self, audio_path: str) -> None:
         """
        Inspect the quality of the processed audio
