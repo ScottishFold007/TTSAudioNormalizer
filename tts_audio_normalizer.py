@@ -141,8 +141,7 @@ class TTSAudioNormalizer(AudioNormalizer):
     def __init__(self):
         super().__init__()
         self.quality_metrics: Dict[str, Any] = {}
-    
- 
+        
     def normalize_audio(self, 
                        input_path: str, 
                        output_path: str, 
