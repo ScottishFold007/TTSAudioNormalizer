@@ -1,5 +1,5 @@
 # TTSAudioNormalizer
-
+### [中文文档](README_CN.md)
 TTSAudioNormalizer is a professional TTS audio preprocessing tool that provides comprehensive audio analysis and standardization processing capabilities. This tool aims to improve TTS training data quality and ensure consistency in audio features.
 
 ## Necessity of TTS Audio Standardization
