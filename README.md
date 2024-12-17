@@ -234,7 +234,7 @@ class TTSAudioNormalizer:
 
 ## 如何使用
 ### 音频描述性分析
-# 创建分析器实例
+
 ```python
 from audio_analyzer import AudioAnalyzer
 analyzer = AudioAnalyzer()
@@ -331,3 +331,11 @@ Max Amplitude:
 处理说话人:   4%|▍         | 2/49 [00:02<01:09,  1.49s/it]
 ...
 ```
+**Results**
+<img width="448" alt="image" src="https://github.com/user-attachments/assets/cafd0db8-d726-4c51-8e4f-68ab0deb0f7c" />
+
+
+
+<img width="930" alt="image" src="https://github.com/user-attachments/assets/9c6841bc-a164-415a-83b3-a3f98818ac5b" />
+
+
