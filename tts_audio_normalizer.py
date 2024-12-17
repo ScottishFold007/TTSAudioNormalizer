@@ -13,71 +13,71 @@ from dataclasses import dataclass
 
 @dataclass
 class AudioProcessingParams:
-    """音频处理参数配置类"""
-    # 输出格式参数
-    output_format: str = 'wav'    # wav格式无损但文件较大，mp3有损但文件小
+    """Audio Processing Parameters Configuration Class"""
+    # Output format parameters
+    output_format: str = 'wav'    # WAV format is lossless but larger, MP3 is lossy but smaller
 
-    # 标准化参数
-    target_db: float = -3.0      # 目标音量大小(dB)，0dB是最大值，-3dB留有余量防止削峰，值越小音量越小
+    # Normalization parameters
+    target_db: float = -3.0      # Target volume level (dB), 0dB is maximum, -3dB leaves headroom to prevent clipping
 
-    # 降噪参数
-    noise_reduction_enabled: bool = True  # 是否启用降噪处理
-    noise_threshold_db: float = -40.0    # 低于此分贝值的声音视为噪声被处理，值越大降噪越强但可能影响有效声音；提高噪声阈值
-    noise_attack_time: float = 0.02      # 降噪开始作用的时间(秒)，值越小响应越快但可能产生不自然感；降低起始时间使降噪更快响应
-    noise_release_time: float = 0.1     # 降噪结束的渐变时间(秒)，值越大过渡越自然但可能使噪声残留时间变长；增加释放时间使声音更自然
+    # Noise reduction parameters
+    noise_reduction_enabled: bool = True  # Enable noise reduction processing
+    noise_threshold_db: float = -40.0    # Sound below this dB value is treated as noise
+    noise_attack_time: float = 0.02      # Time (seconds) for noise reduction to take effect
+    noise_release_time: float = 0.1      # Fade-out time (seconds) for noise reduction
 
-    # 静音检测参数
-    silence_threshold: float = 2.0       # 判定为静音的音量阈值，占最大音量的百分比，值越大越容易判定为静音
-    min_silence_duration: float = 0.1    # 最短静音判定时长(秒)，小于此时长的静音将被保留
+    # Silence detection parameters
+    silence_threshold: float = 2.0       # Volume threshold for silence detection (percentage of max volume)
+    min_silence_duration: float = 0.1    # Minimum silence duration (seconds) to be detected
 
-    # 压限器参数
-    compand_enabled: bool = True         # 是否启用动态范围压缩
-    attack_time: float = 0.1            # 压缩器启动时间(秒)，影响对突发声音的响应速度
-    decay_time: float = 0.2               # 压缩器释放时间(秒)，影响声音衰减的自然度
-    soft_knee_db: float = 2.0            # 压缩过渡区间(dB)，值越大压缩更平滑但不够干脆
-    compression_ratio: float = 3.0        # 压缩比率，如2.5:1表示输入增加2.5dB时输出只增加1dB
+    # Compressor parameters
+    compand_enabled: bool = True         # Enable dynamic range compression
+    attack_time: float = 0.1            # Compressor attack time (seconds)
+    decay_time: float = 0.2             # Compressor release time (seconds)
+    soft_knee_db: float = 2.0           # Compression transition range (dB)
+    compression_ratio: float = 3.0       # Compression ratio, e.g., 2.5:1 means 2.5dB input increase yields 1dB output increase
 
-    # 均衡器参数
-    equalizer_enabled: bool = True       # 是否启用均衡器调节
+    # Equalizer parameters
+    equalizer_enabled: bool = True       # Enable equalizer adjustment
 
-    # 高频段设置 (2kHz - 8kHz)
-    treble_gain: float = 2.0            # 高频增益(dB)，正值增强清晰度，负值减弱刺耳感
-    treble_slope: float = 0.5           # 高频斜率，值越大频率响应曲线越陡峭
-    treble_frequency: float = 3000.0    # 高频中心频率(Hz)，调节高频开始作用的位置
+    # High frequency settings (2kHz - 8kHz)
+    treble_gain: float = 2.0            # High frequency gain (dB)
+    treble_slope: float = 0.5           # High frequency slope
+    treble_frequency: float = 3000.0    # High frequency center frequency (Hz)
 
-    # 中频段设置 (250Hz - 2kHz)
-    mid_gain: float = 1.0               # 中频增益(dB)，影响人声主要频段的突出程度
-    mid_frequency: float = 1000.0       # 中频中心频率(Hz)，人声最敏感区域约在1kHz
-    mid_q: float = 0.707                # Q值，影响中频段的带宽，值越大带宽越窄
+    # Mid frequency settings (250Hz - 2kHz)
+    mid_gain: float = 1.0               # Mid frequency gain (dB)
+    mid_frequency: float = 1000.0       # Mid frequency center frequency (Hz)
+    mid_q: float = 0.707                # Q value, affects mid frequency bandwidth
 
-    # 低频段设置 (20Hz - 250Hz)
-    bass_gain: float = 3.0              # 低频增益(dB)，影响声音厚重感
-    bass_slope: float = 0.4             # 低频斜率，值越大频率响应曲线越陡峭
-    bass_frequency: float = 100.0       # 低频中心频率(Hz)，调节低频开始作用的位置
+    # Low frequency settings (20Hz - 250Hz)
+    bass_gain: float = 3.0              # Low frequency gain (dB)
+    bass_slope: float = 0.4             # Low frequency slope
+    bass_frequency: float = 100.0       # Low frequency center frequency (Hz)
 
-    # 亚音频控制 (20Hz以下)
-    subsonic_filter_enabled: bool = True # 是否启用次低音过滤
-    subsonic_frequency: float = 20.0     # 次低音截止频率(Hz)，低于此频率的声音将被过滤
+    # Subsonic control (below 20Hz)
+    subsonic_filter_enabled: bool = True # Enable subsonic filtering
+    subsonic_frequency: float = 20.0     # Subsonic cutoff frequency (Hz)
 
-    # 淡入淡出
-    fade_enabled: bool = True           # 是否启用淡入淡出效果
-    fade_in_time: float = 0.02          # 淡入时间(秒)，防止开始的爆音
-    fade_out_time: float = 0.02         # 淡出时间(秒)，防止结束的爆音
+    # Fade effects
+    fade_enabled: bool = True           # Enable fade in/out effects
+    fade_in_time: float = 0.02          # Fade in time (seconds)
+    fade_out_time: float = 0.02         # Fade out time (seconds)
 
-    # 采样率和声道
+    # Sample rate and channels
     rate_enabled: bool = True           
-    rate: int = 22050                   # 采样率(Hz)，22050Hz适合语音，更高的值增加文件大小
+    rate: int = 22050                   # Sample rate (Hz), 22050Hz suitable for speech
     channels_enabled: bool = True        
-    channels: int = 1                   # 声道数，1为单声道(适合语音)，2为立体声
+    channels: int = 1                   # Number of channels, 1 for mono (suitable for speech), 2 for stereo
 
 
 class AudioNormalizer:
-    """基础音频标准化类"""
+    """Base Audio Normalization Class"""
     def __init__(self):
         self.supported_formats = ['.wav', '.mp3', '.flac', '.m4a']
         self.failed_files: List[Tuple[str, str]] = []
         
-        # 配置日志
+        # Configure logging
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(message)s',
@@ -85,18 +85,18 @@ class AudioNormalizer:
         )
     
     def _validate_input_file(self, input_path: str) -> None:
-        """验证输入文件"""
+        """Validate input file"""
         if not os.path.exists(input_path):
-            raise FileNotFoundError(f"输入文件不存在: {input_path}")
+            raise FileNotFoundError(f"Input file does not exist: {input_path}")
         
         if os.path.getsize(input_path) == 0:
-            raise ValueError(f"文件大小为0: {input_path}")
+            raise ValueError(f"File size is 0: {input_path}")
             
         if not self.check_audio_format(input_path):
-            raise ValueError(f"不支持的音频格式: {input_path}")
+            raise ValueError(f"Unsupported audio format: {input_path}")
 
     def _get_audio_files(self, input_dir: str, output_dir: str, params: AudioProcessingParams) -> List[Tuple[str, str]]:
-        """获取需要处理的音频文件列表"""
+        """Obtain the list of audio files that need to be processed"""
         audio_files = []
         for root, _, files in os.walk(input_dir):
             for file in files:
@@ -109,34 +109,34 @@ class AudioNormalizer:
         return audio_files
 
     def _handle_error(self, input_path: str, error: Exception) -> None:
-        """处理错误"""
-        error_msg = f"处理文件 {input_path} 失败: {str(error)}"
+        """Handle errors"""
+         error_msg = f"Failed to process file {input_path}: {str(error)}"
         logging.error(error_msg)
         self.failed_files.append((input_path, str(error)))
 
     def check_audio_format(self, file_path: str) -> bool:
-        """检查音频格式是否支持"""
+        """Check if the audio format is supported."""
         ext = os.path.splitext(file_path)[1].lower()
         return ext in self.supported_formats
 
     def _print_summary(self, total_files: int) -> None:
-        """打印处理结果统计"""
+        """Print processing results statistics."""
         failed_count = len(self.failed_files)
         success_count = total_files - failed_count
         
-        print("\n处理完成统计:")
-        print(f"总文件数: {total_files}")
-        print(f"成功处理: {success_count}")
-        print(f"处理失败: {failed_count}")
+        print("\nProcessing completion statistics:")
+        print(f"Total number of files: {total_files}")
+        print(f"Successfully processed: {success_count}")
+        print(f"Failed to process: {failed_count}")
         
         if failed_count > 0:
-            print("\n失败文件列表:")
+            print("\nList of failed files:")
             for file_path, error in self.failed_files:
                 print(f"- {file_path}: {error}")
 
 
 class TTSAudioNormalizer(AudioNormalizer):
-    """专门针对TTS训练的音频标准化处理器"""
+    """A dedicated audio standardization processor for TTS training."""
     
     def __init__(self):
         super().__init__()
@@ -148,7 +148,7 @@ class TTSAudioNormalizer(AudioNormalizer):
                        output_path: str, 
                        params: Optional[AudioProcessingParams] = None) -> bool:
         """
-        优化的音频处理流程，专门针对TTS训练
+        Optimized audio processing workflow specifically for TTS training.
         """
         if params is None:
             params = AudioProcessingParams()
@@ -159,16 +159,16 @@ class TTSAudioNormalizer(AudioNormalizer):
 
             transformer = sox.Transformer()
 
-            # 1. 基础预处理
+            # 1. Basic Preprocessing
             if params.rate_enabled:
                 transformer.rate(params.rate)
             if params.channels_enabled:
                 transformer.channels(params.channels)
-            transformer.dcshift(shift=0.0)  # 消除直流偏移
+            transformer.dcshift(shift=0.0)  # Eliminate DC offset.
 
-            # 2. 降噪和静音处理
+            # 2. Noise and silence processing.
             if params.noise_reduction_enabled:
-                # 多级压缩处理
+                # Multi-stage compression processing.
                 transformer.compand(
                     attack_time=params.noise_attack_time,
                 decay_time=params.noise_release_time,
@@ -177,7 +177,7 @@ class TTSAudioNormalizer(AudioNormalizer):
                     post_gain_db=0
                 )
 
-                # 噪声门处理
+                # Noise gate processing.
                 transformer.noisegate(
                     threshold_db=params.noise_threshold_db,
                     attack_time=params.noise_attack_time,
