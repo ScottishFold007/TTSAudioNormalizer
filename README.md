@@ -233,7 +233,7 @@ class TTSAudioNormalizer:
 - 设置 target_db = min(平均音量均值, -3.0)
 
 ## 如何使用
-### 音频描述性分析
+### 1、音频描述性分析
 
 ```python
 from audio_analyzer import AudioAnalyzer
@@ -337,5 +337,115 @@ Max Amplitude:
 
 
 <img width="930" alt="image" src="https://github.com/user-attachments/assets/9c6841bc-a164-415a-83b3-a3f98818ac5b" />
+
+### 2、音频归一化
+```python
+import os
+from tqdm import tqdm
+from pathlib import Path
+from typing import Dict, Any, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tts_audio_normalizer import AudioProcessingParams, process_all_speakers
+
+def process_all_speakers(
+    base_input_dir: str,
+    base_output_dir: str,
+    params: Optional[AudioProcessingParams] = None,
+    max_workers: int = 16
+) -> Dict[str, Any]:
+    """
+    处理基础目录下所有说话人的音频文件
+    """
+    os.makedirs(base_output_dir, exist_ok=True)
+    speaker_dirs = [d for d in Path(base_input_dir).iterdir() if d.is_dir()]
+    normalizer = TTSAudioNormalizer()
+    results = {}
+    
+    if params is None:
+        params = AudioProcessingParams(
+            output_format='wav',
+            target_db=-3.0,
+            rate=22050,
+            channels=1,
+            noise_reduction_enabled=True,
+            noise_threshold_db=-30.0,
+            equalizer_enabled=True,
+            treble_gain=2.0,
+            mid_gain=1.0,
+            bass_gain=1.5
+        )
+    
+    print(f"发现 {len(speaker_dirs)} 个说话人目录")
+    
+    # 使用tqdm包装说话人处理循环
+    for speaker_dir in tqdm(speaker_dirs, desc="处理说话人", position=0):
+        speaker_name = speaker_dir.name
+        print(f"\n处理说话人: {speaker_name}")
+        
+        speaker_output_dir = os.path.join(base_output_dir, speaker_name)
+        os.makedirs(speaker_output_dir, exist_ok=True)
+        
+        try:
+            normalizer.batch_normalize_directory(
+                input_dir=str(speaker_dir),
+                output_dir=speaker_output_dir,
+                params=params,
+                max_workers=max_workers
+            )
+            
+            quality_report = normalizer.get_quality_report()
+            results[speaker_name] = {
+                'status': 'success',
+                'quality_metrics': quality_report
+            }
+            
+        except Exception as e:
+            print(f"处理说话人 {speaker_name} 时发生错误: {str(e)}")
+            results[speaker_name] = {
+                'status': 'failed',
+                'error': str(e)
+            }
+    
+    # 打印总体处理结果
+    print("\n处理完成统计:")
+    success_count = sum(1 for r in results.values() if r['status'] == 'success')
+    print(f"成功处理说话人数: {success_count}/{len(speaker_dirs)}")
+    
+    if success_count < len(speaker_dirs):
+        print("\n处理失败的说话人:")
+        for speaker, result in results.items():
+            if result['status'] == 'failed':
+                print(f"- {speaker}: {result['error']}")
+    
+    return results
+
+# 使用示例：
+if __name__ == "__main__":
+    base_input_dir = "./origin_audio_segments"
+    base_output_dir = "./normalized_audio_segments"
+    
+    # 设置处理参数
+    params = AudioProcessingParams(
+        output_format='wav',
+        target_db=-3.0,
+        rate=22050,
+        channels=1,
+        noise_reduction_enabled=True,
+        noise_threshold_db=-30.0,
+        equalizer_enabled=True,
+        treble_gain=2.0,
+        mid_gain=1.0,
+        bass_gain=1.5
+    )
+    
+    # 执行批量处理
+    results = process_all_speakers(
+        base_input_dir=base_input_dir,
+        base_output_dir=base_output_dir,
+        params=params,
+        max_workers=16
+    )
+```
+
 
 
