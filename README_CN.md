@@ -49,7 +49,33 @@ TTSAudioNormalizer 是一个专业的 TTS 音频预处理工具，提供全面�
 - 增强不同样本间的可比性
 - 保证训练数据的质量一致性
 
+## 理想的音频标准化流程：
 
+```python
+class TTSAudioNormalizer:
+    def process_pipeline(self, audio_file):
+        """
+        TTS训练前的音频标准化流程
+        """
+        # 1. 基础预处理
+        self.convert_format()      # 统一格式
+        self.resample()           # 统一采样率
+        self.convert_channels()   # 转换为单声道
+        
+        # 2. 音质优化
+        self.remove_dc_offset()   # 去除直流偏置
+        self.normalize_volume()   # 音量标准化
+        self.optimize_frequency() # 频率响应优化
+        
+        # 3. 噪声处理
+        self.remove_silence()     # 去除静音段
+        self.reduce_noise()       # 降噪处理
+        self.compress_dynamic()   # 压缩动态范围
+        
+        # 4. 质量检查
+        self.check_quality()      # 质量验证
+        self.validate_features()  # 特征验证
+```
 
 ## 主要功能
 
