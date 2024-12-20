@@ -343,23 +343,22 @@ Max Amplitude:
 - 处理整个目录：使用 batch_normalize_directory() 函数
 这样处理后的音频文件应该会有比较均匀的音量水平，解决声音忽大忽小的问题。如果觉得整体音量还是太小或太大，可以调整 target_db 参数的值。
 ```python
-from tts_audio_normalizer import AudioProcessingParams, process_all_speakers
+from tts_audio_normalizer import AudioProcessingParams, TTSAudioNormalizer
 
-params = AudioProcessingParams(
-    target_db=-3.0,          # 目标音量
-    rate=22050,             # 采样率
-    channels=1,             # 单声道
-    noise_reduction_enabled=True,
-    equalizer_enabled=True,
-    treble_gain=2.0,        # 高频增益
-    mid_gain=1.0,           # 中频增益
-    bass_gain=1.5           # 低频增益
-)
+# 创建参数对象并自定义参数
+params = AudioProcessingParams()
+params.noise_reduction_strength = 0.8  # 增加降噪强度
+params.target_db = -3  # 设置目标音量
 
-results = process_all_speakers(
-    base_input_dir="raw_audio", # 嵌套文件夹，即一个大文件夹下有若干子文件夹（其中有若干音频文件）
-    base_output_dir="normalized_audio",
-    params=params
+# 处理单个文件
+#normalizer.normalize_audio("input.wav", "output.wav", params)
+
+# 批量处理目录
+normalizer.batch_normalize_directory(
+    input_dir = "./audio_segments",
+    output_dir = "./audio_segments_normalized",
+    params=params,
+    max_workers=4
 )
 ```
 
