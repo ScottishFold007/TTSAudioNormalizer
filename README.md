@@ -343,23 +343,22 @@ Usage is simple:
 The processed audio files should have more uniform volume levels, solving the issue of inconsistent loudness. If overall volume still feels too low or high, adjust the target_db parameter.
 
 ```python
-from tts_audio_normalizer import AudioProcessingParams, process_all_speakers
+from tts_audio_normalizer import AudioProcessingParams, TTSAudioNormalizer
 
-params = AudioProcessingParams(
-    target_db=-3.0,          # Target volume
-    rate=22050,             # Sample rate
-    channels=1,             # Mono channel
-    noise_reduction_enabled=True,
-    equalizer_enabled=True,
-    treble_gain=2.0,        # Treble gain
-    mid_gain=1.0,           # Mid gain
-    bass_gain=1.5           # Bass gain
-)
+# Create parameter object and customize parameters
+params = AudioProcessingParams()
+params.noise_reduction_strength = 0.8  # Increase noise reduction intensity
+params.target_db = -3  # Set target volume
 
-results = process_all_speakers(
-    base_input_dir="raw_audio", # Nested folders structure
-    base_output_dir="normalized_audio",
-    params=params
+# Process single file
+#normalizer.normalize_audio("input.wav", "output.wav", params)
+
+# Batch process directory
+normalizer.batch_normalize_directory(
+    input_dir = "./audio_segments",
+    output_dir = "./audio_segments_normalized",
+    params=params,
+    max_workers=4
 )
 ```
 
